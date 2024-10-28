@@ -63,7 +63,7 @@ class MVGRequests:
         )
         return httpx.Request(
             "GET",
-            f"{MVGRequests.url}api/fib/v2/departure",
+            f"{MVGRequests.url}api/bgw-pt/v3/departures",
             params=param,
             headers=headers,
         )
@@ -113,7 +113,7 @@ class MVGRequests:
         )
         return httpx.Request(
             "GET",
-            f"{MVGRequests.url}api/fib/v2/location",
+            f"{MVGRequests.url}api/bgw-pt/v3/locations",
             params=param,
             headers=headers,
         )
@@ -123,7 +123,7 @@ class MVGRequests:
         param = httpx.QueryParams({"messageType": message_type})
         return httpx.Request(
             "GET",
-            f"{MVGRequests.url}api/fib/v2/message",
+            f"{MVGRequests.url}api/bgw-pt/v3/messages",
             params=param,
             headers=headers,
         )
@@ -159,16 +159,16 @@ class MVGRequests:
         )
         return httpx.Request(
             "GET",
-            f"{MVGRequests.url}api/fib/v2/connection",
+            f"{MVGRequests.url}api/bgw-pt/v3/routes",
             params=param,
             headers=headers,
         )
 
     @staticmethod
     def lineinfo(language: Optional[str], headers: Dict[str, str]) -> httpx.Request:
-        url = f"{MVGRequests.url}api/fib/v2/lineinfo/{language}"
+        url = f"{MVGRequests.url}api/bgw-gt/v3/lineinfos/{language}"
         if language is None:
-            url = f"{MVGRequests.url}api/fib/v2/lineinfo"
+            url = f"{MVGRequests.url}api/bgw-gt/v3/lineinfo"
         return httpx.Request(
             "GET", url, headers=headers
         )
@@ -179,14 +179,14 @@ class MVGRequests:
     ) -> httpx.Request:
         param = httpx.QueryParams({"hash": hash_, "world": world})
         return httpx.Request(
-            "GET", f"{MVGRequests.url}api/fib/v2/station", headers=headers, params=param
+            "GET", f"{MVGRequests.url}api/bgw-pt/v3/stations", headers=headers, params=param
         )
 
     @staticmethod
     def lines(station_id: Optional[str], headers: Dict[str, str]):
-        url = f"{MVGRequests.url}api/fib/v2/line/{station_id}"
+        url = f"{MVGRequests.url}api/bgw-gt/v3/lines/{station_id}"
         if station_id is None:
-            url = f"{MVGRequests.url}api/fib/v2/line"
+            url = f"{MVGRequests.url}api/bgw-gt/v3/lines"
         return httpx.Request(
             "GET", url, headers=headers
         )
