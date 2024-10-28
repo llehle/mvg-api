@@ -5,6 +5,13 @@ from typing import Any, List, Optional
 from pydantic import BaseModel
 
 
+class PlannedMaintenance(BaseModel):
+    status: str
+    since: int
+    until: int
+    description: str
+
+
 class TransportDevice(BaseModel):
     description: str
     identifier: str
@@ -14,7 +21,7 @@ class TransportDevice(BaseModel):
     type: str
     xcoordinate: int
     ycoordinate: int
-    planned: Any
+    planned: Optional[PlannedMaintenance]
 
 
 class StationTransportDevices(BaseModel):

@@ -12,12 +12,14 @@ class Departure(BaseModel):
     realtimeDepartureTime: int
     transportType: str
     label: str
+    divaId: str
     network: str
     trainType: str
     destination: str
     cancelled: bool
     sev: bool
     platform: Optional[int] = None
+    stopPositionNumber: Optional[int] = None
     messages: List
     bannerHash: str
     occupancy: str

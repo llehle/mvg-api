@@ -15,6 +15,8 @@ class Station(BaseStation):
 
 
 class Line(BaseStation):
+    id: str
+    name: str
     typeOfTransport: str
     stations: List[Station]
     direction: str

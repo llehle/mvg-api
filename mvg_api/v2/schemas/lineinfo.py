@@ -8,6 +8,7 @@ from pydantic import BaseModel, RootModel
 class Key(BaseModel):
     transportType: str
     label: Optional[str] = None
+    language: Optional[str] = None
 
 
 class Info(BaseModel):

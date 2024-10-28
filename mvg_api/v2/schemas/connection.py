@@ -13,17 +13,31 @@ class Station(BaseModel):
     latitude: float
     longitude: float
     stationGlobalId: str
-    stationDivaId: int
+    stationDivaId: Optional[int] = None
+    platform: Optional[int] = None
+    platformChanged: Optional[bool] = None
     place: str
     name: str
     plannedDeparture: str
+    departureDelayInMinutes: Optional[int] = None
+    arrivalDelayInMinutes: Optional[int] = None
     transportTypes: List[str]
     surroundingPlanLink: str
     occupancy: str
     hasZoomData: bool
     hasOutOfOrderEscalator: bool
     hasOutOfOrderElevator: bool
-    platform: Optional[int] = None
+    
+    def delayInMinutes(self):
+        """
+        :return: in order of presence, the departure delay, the arrival delay or none.
+        """
+        if self.departureDelayInMinutes is not None:
+            return self.departureDelayInMinutes
+        if self.arrivalDelayInMinutes is not None:
+            return self.arrivalDelayInMinutes
+        return None
+        
 
 
 class Line(BaseModel):
@@ -32,6 +46,7 @@ class Line(BaseModel):
     destination: str
     trainType: str
     network: str
+    divaId: str
     sev: bool
 
 

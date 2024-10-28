@@ -119,7 +119,7 @@ class MVGRequests:
         )
 
     @staticmethod
-    def messages(headers: Dict[str, str], message_type=Optional[str]) -> httpx.Request:
+    def messages(headers: Dict[str, str], message_type: Optional[str]) -> httpx.Request:
         param = httpx.QueryParams({"messageType": message_type})
         return httpx.Request(
             "GET",
@@ -137,6 +137,7 @@ class MVGRequests:
         *,
         routing_date_time_is_arrival: bool,
         transport_types: Optional[str] = None,
+        accessibility_options: Optional[str] = None,
         origin_latitude: Optional[float] = None,
         origin_longitude: Optional[float] = None,
         destination_latitude: Optional[float] = None,
@@ -149,6 +150,7 @@ class MVGRequests:
                 "routingDateTime": routing_date_time,
                 "routingDateTimeIsArrival": routing_date_time_is_arrival,
                 "transportTypes": transport_types,
+                "accessibilityOptions": accessibility_options,
                 "originLatitude": origin_latitude,
                 "originLongitude": origin_longitude,
                 "destinationLatitude": destination_latitude,
@@ -163,9 +165,12 @@ class MVGRequests:
         )
 
     @staticmethod
-    def lineinfo(headers: Dict[str, str], language: Optional[str]) -> httpx.Request:
+    def lineinfo(language: Optional[str], headers: Dict[str, str]) -> httpx.Request:
+        url = f"{MVGRequests.url}api/fib/v2/lineinfo/{language}"
+        if language is None:
+            url = f"{MVGRequests.url}api/fib/v2/lineinfo"
         return httpx.Request(
-            "GET", f"{MVGRequests.url}api/fib/v2/lineinfo/{language}", headers=headers
+            "GET", url, headers=headers
         )
 
     @staticmethod
@@ -178,9 +183,12 @@ class MVGRequests:
         )
 
     @staticmethod
-    def lines(headers: Dict[str, str]):
+    def lines(station_id: Optional[str], headers: Dict[str, str]):
+        url = f"{MVGRequests.url}api/fib/v2/line/{station_id}"
+        if station_id is None:
+            url = f"{MVGRequests.url}api/fib/v2/line"
         return httpx.Request(
-            "GET", f"{MVGRequests.url}api/fib/v2/line", headers=headers
+            "GET", url, headers=headers
         )
 
     @staticmethod
@@ -384,7 +392,7 @@ class SyncApi:
         )
         return location.Locations(response)
 
-    def get_messages(self, message_type=Optional[str]) -> messages.Messages:
+    def get_messages(self, message_type: Optional[str] = None) -> messages.Messages:
         """
         Get the messages from the message board. Somehow similar to the ems ticker but it has more and different
          information.
@@ -401,7 +409,8 @@ class SyncApi:
         routing_date_time: str,
         *,
         routing_date_time_is_arrival: bool,
-        transport_types: Optional[str] = None,
+        transport_types: Optional[str] = "SCHIFF,RUFTAXI,BAHN,UBAHN,TRAM,SBAHN,BUS,REGIONAL_BUS",
+        accessibility_options: Optional[str] = None,
         origin_latitude: Optional[float] = None,
         origin_longitude: Optional[float] = None,
         destination_latitude: Optional[float] = None,
@@ -415,7 +424,8 @@ class SyncApi:
         :param routing_date_time: the date and time of the departure or arrival for example 2023-06-25T20:04:47.552Z
         :param routing_date_time_is_arrival: if the routing_date_time is the arrival time or the departure time
         :param transport_types: the transport types to use, available types are SCHIFF,RUFTAXI,BAHN,UBAHN,TRAM,SBAHN,BUS
-        ,REGIONAL_BUS
+        ,REGIONAL_BUS. If BAHN is not specifically noted, it will not be suggested.
+        :param accessibility_options: accessibility options to include as comma separated string; available are NO_ESCALATORS,NO_ELEVATORS,WHEELCHAIR_ACCESS
         :param origin_latitude: the latitude of the origin station
         :param origin_longitude: the longitude of the origin station
         :param destination_latitude: the latitude of the destination station
@@ -430,6 +440,7 @@ class SyncApi:
                 self.headers,
                 routing_date_time_is_arrival=routing_date_time_is_arrival,
                 transport_types=transport_types,
+                accessibility_options=accessibility_options,
                 origin_latitude=origin_latitude,
                 origin_longitude=origin_longitude,
                 destination_latitude=destination_latitude,
@@ -438,13 +449,13 @@ class SyncApi:
         )
         return connection.Connections(response)
 
-    def get_lineinfo(self, language: Optional[str]) -> lineinfo.Infos:
+    def get_lineinfo(self, language: Optional[str] = None) -> lineinfo.Infos:
         """
         Get the line info for some wired special lines like "lufthanse express bus"
-        :param language: here the language argument also makes no difference in the response output.
+        :param language: language to filter the output. Accepted values are GERMAN, ENGLISH, or BAVARIAN. If the parameter is not supplied, values for all languages are returned.
         :return: a list of line info
         """
-        response = self._send_request(MVGRequests.lineinfo(self.headers, language))
+        response = self._send_request(MVGRequests.lineinfo(language, self.headers))
         return lineinfo.Infos(response)
 
     def get_stations(
@@ -460,12 +471,13 @@ class SyncApi:
         response = self._send_request(MVGRequests.stations(self.headers, hash_, world))
         return stations.Locations(**response)
 
-    def get_lines(self) -> line.Lines:
+    def get_lines(self, station_id: Optional[str] = None) -> line.Lines:
         """
-        Get all the lines
+        Get all lines. If station_id is specified, query only the lines serving that station.
+        :param station_id: global id of a station or none.
         :return: a list of lines
         """
-        response = self._send_request(MVGRequests.lines(self.headers))
+        response = self._send_request(MVGRequests.lines(station_id, self.headers))
         return line.Lines(response)
 
     def get_zoom_station(self, div_id: int) -> zoom_station.ZoomStation:
@@ -682,7 +694,7 @@ class AsyncApi:
         )
         return location.Locations(response)
 
-    async def get_messages(self, message_type=Optional[str]) -> messages.Messages:
+    async def get_messages(self, message_type: Optional[str] = None) -> messages.Messages:
         """
         Get the messages from the message board. Somehow similar to the ems ticker but it has more and different
          information.

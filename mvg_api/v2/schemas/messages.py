@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import List
+from typing import List, Optional
 
 from pydantic import BaseModel, RootModel
 
@@ -14,6 +14,7 @@ class Line(BaseModel):
     label: str
     transportType: str
     network: str
+    divaId: str
     sev: bool
 
 
@@ -22,7 +23,7 @@ class Message(BaseModel):
     description: str
     publication: int
     validFrom: int
-    validTo: int
+    validTo: Optional[int] = None
     type: str
     provider: str
     links: List[Link]
