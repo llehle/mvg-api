@@ -166,9 +166,9 @@ class MVGRequests:
 
     @staticmethod
     def lineinfo(language: Optional[str], headers: Dict[str, str]) -> httpx.Request:
-        url = f"{MVGRequests.url}api/bgw-gt/v3/lineinfos/{language}"
+        url = f"{MVGRequests.url}api/bgw-pt/v3/lineinfos/{language}"
         if language is None:
-            url = f"{MVGRequests.url}api/bgw-gt/v3/lineinfo"
+            url = f"{MVGRequests.url}api/bgw-pt/v3/lineinfo"
         return httpx.Request(
             "GET", url, headers=headers
         )
@@ -184,9 +184,9 @@ class MVGRequests:
 
     @staticmethod
     def lines(station_id: Optional[str], headers: Dict[str, str]):
-        url = f"{MVGRequests.url}api/bgw-gt/v3/lines/{station_id}"
+        url = f"{MVGRequests.url}api/bgw-pt/v3/lines/{station_id}"
         if station_id is None:
-            url = f"{MVGRequests.url}api/bgw-gt/v3/lines"
+            url = f"{MVGRequests.url}api/bgw-pt/v3/lines"
         return httpx.Request(
             "GET", url, headers=headers
         )
